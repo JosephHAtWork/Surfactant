@@ -66,5 +66,7 @@ def extract_imports(filename: str, filetype: str, project_root: str):
             schema.pyImports[moduleName] = PyImportedModule(
                 imported_objects=[importName], type=isortType
             )
+        else:
+            schema.pyImports[moduleName].imported_objects.append(importName)
 
     return asdict(schema)
