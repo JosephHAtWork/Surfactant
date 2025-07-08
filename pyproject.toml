@@ -68,7 +68,7 @@ java = ["javatools>=1.6,==1.*"]
 test = ["pytest"]
 dev = ["build", "pre-commit"]
 docs = ["sphinx", "myst-parser"]
-python = ["tree-sitter", "tree-sitter-python", "chardet"]
+python = ["isort"]
 
 [project.scripts]
 surfactant = "surfactant.__main__:main"
