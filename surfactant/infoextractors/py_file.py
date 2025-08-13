@@ -69,8 +69,9 @@ def extract_imports(schema: Schema, filename: str, project_root: str):
         importName = i.attribute  # ie function, class
         if moduleName not in schema.pyImports:
             isortType = place_module_with_reason(moduleName)
+
             schema.pyImports[moduleName] = PyImportedModule(
-                imported_objects=[importName], type=isortType
+                imported_objects=([importName] if importName is not None else []), type=isortType
             )
         else:
             schema.pyImports[moduleName].imported_objects.append(importName)
@@ -94,8 +95,8 @@ def extract_ast_objects(schema: Schema, filename: str):
                         if target.id == "__all__":
                             if isinstance(node.value, ast.List):
                                 # Caveat: this only works for constant values/strings.
-                                # If a function returns a name (like __all__ = [ "myVar", ret_myVar2() ]), it won't be detected
-                                # Only by loading the file will values like those be able to be extracted
+                                #   If a function returns a name (like __all__ = [ "myVar", ret_myVar2() ]), it won't be detected
+                                #   Only by loading the file will values like those be able to be extracted
                                 all_const_values = [
                                     elt.s
                                     for elt in node.value.elts
