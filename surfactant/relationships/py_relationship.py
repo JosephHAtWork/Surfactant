@@ -71,16 +71,21 @@ def establish_relationships(
                 if item_package_path.endswith(package_name):
                     files_in_package.append(item)
 
-                print("\t\t", item_package_path, package_name, found_matching_file)
+                # print("\t\t", item_package_path, package_name, found_matching_file)
 
                 # Case 2: Check if all imported objects are defined in this module
                 imported_obj_found_in_module = set(importedObjects).issubset(set(defined_objects))
-                if found_matching_file and imported_obj_found_in_module:
-                    print("d", item.fileName, defined_objects)
+                if found_matching_file and imported_obj_found_in_module and importedObjects != []:
+                    print("Matched case 2", item.fileName, defined_objects)
 
                     rel = Relationship(software.UUID, item.UUID, "Uses")
                     if rel not in relationships:
                         relationships.append(rel)
+                    break
+
+            else:
+                continue
+            break  # Break out of outer sbom.software loop
 
         # Case 1 & 3: Goes over the list of files/modules in the package in case a file match wasn't found
         print("\t", "Finding package match:")
@@ -107,7 +112,7 @@ def establish_relationships(
             )
 
             for obj in importedObjects:
-                print(obj)
+                # print(obj)
                 # Case 3
                 for p in init_struct.installPath:
                     imported_module = resolve_relative_import(obj, p)
@@ -126,30 +131,34 @@ def establish_relationships(
 
                 # Case 1
                 if obj in init_linked_objects.keys():
-                    file_for_linked_object = resolve_relative_import(
-                        init_linked_objects[obj], init_struct.installPath[0]
-                    )
-
-                    for item in files_in_package:
-                        defined_objects = next(
-                            (
-                                d["pyDefinedObjects"]
-                                for d in item.metadata
-                                if "pyDefinedObjects" in d
-                            ),
-                            None,
+                    for p in init_struct.installPath:
+                        file_for_linked_object = resolve_relative_import(
+                            init_linked_objects[obj], p
                         )
-                        if (
-                            file_for_linked_object in [Path(i) for i in item.installPath]
-                            and obj in defined_objects
-                        ):
-                            print("Matched case 1", obj, item.installPath)
 
-                            rel = Relationship(software.UUID, item.UUID, "Uses")
-                            if rel not in relationships:
-                                relationships.append(rel)
+                        for item in files_in_package:
+                            defined_objects = next(
+                                (
+                                    d["pyDefinedObjects"]
+                                    for d in item.metadata
+                                    if "pyDefinedObjects" in d
+                                ),
+                                None,
+                            )
+                            if (
+                                file_for_linked_object in [Path(i) for i in item.installPath]
+                                and obj in defined_objects
+                            ):
+                                print("Matched case 1", obj, item.installPath)
 
-                            break
+                                rel = Relationship(software.UUID, item.UUID, "Uses")
+                                if rel not in relationships:
+                                    relationships.append(rel)
+
+                                break
+                        else:
+                            continue
+                        break  # Break out of outer init_struct.installPath loop
 
         print()
 
