@@ -188,6 +188,18 @@ def establish_relationships(
 
                     break
 
+                # Case 1 (module references an imported symbol)
+                module_with_obj = next(
+                    (
+                        module_name
+                        for module_name, data in init_imports.items()
+                        if obj in data.get("imported_objects", [])
+                    ),
+                    None,
+                )
+                if module_with_obj is not None:
+                    pass
+
         print()
 
     return relationships
