@@ -1,5 +1,6 @@
 import { zoomToView } from "#buttonEventHandlersModule";
 import { insert, isLeaf, resolvePath } from "#kvGraph";
+import { setGraphColor } from "#utilModule";
 
 function createRow(
 	leftColumnValue,
@@ -202,6 +203,7 @@ function getIconClassForFileType(type) {
 function jumpToNodeOnClick() {
 	const nodeID = this.getAttribute("nodeID");
 
+	//store.set("isSearchNodeHighlighted", true);
 	zoomToView([nodeID]);
 	buildNodeSelectionSidebar(nodeID);
 }
@@ -369,20 +371,6 @@ export function insertSearchSidebar(id) {
 	fragment.appendChild(resultsSection);
 
 	rootNode.replaceChildren(fragment);
-
-	function setGraphColor(color) {
-		const nodesDataset = nodes.get({ returnType: "Object" });
-
-		for (const nID in nodesDataset) {
-			nodesDataset[nID].color = color;
-		}
-
-		const tmp = [];
-		for (const nID in nodesDataset)
-			if (Object.hasOwn(nodesDataset, nID)) tmp.push(nodesDataset[nID]);
-
-		nodes.update(tmp);
-	}
 
 	function createResultsSection(nodeIDs) {
 		function createResultsCard(nodeID) {
