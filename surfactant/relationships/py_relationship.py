@@ -109,12 +109,20 @@ def establish_relationships(
             for obj in importedObjects:
                 print(obj)
                 # Case 3
-                imported_module = resolve_relative_import(obj, init_struct.installPath[0])
-                if imported_module != Path("."):
-                    for item in files_in_package:
-                        if imported_module in [Path(i) for i in item.installPath]:
-                            print("Matched case 3", obj, item.installPath)
-                            break
+                for p in init_struct.installPath:
+                    imported_module = resolve_relative_import(obj, p)
+                    if imported_module != Path("."):
+                        for item in files_in_package:
+                            if imported_module in [Path(i) for i in item.installPath]:
+                                print("Matched case 3", obj, item.installPath)
+
+                                rel = Relationship(software.UUID, item.UUID, "Uses")
+                                if rel not in relationships:
+                                    relationships.append(rel)
+                                break
+                        else:
+                            continue
+                        break  # Break out of outer init_struct.installPath loop
 
                 # Case 1
                 if obj in init_linked_objects.keys():
@@ -136,6 +144,11 @@ def establish_relationships(
                             and obj in defined_objects
                         ):
                             print("Matched case 1", obj, item.installPath)
+
+                            rel = Relationship(software.UUID, item.UUID, "Uses")
+                            if rel not in relationships:
+                                relationships.append(rel)
+
                             break
 
         print()
