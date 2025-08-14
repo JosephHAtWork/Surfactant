@@ -119,6 +119,14 @@ def establish_relationships(
                 (m["pyLinkedObjects"] for m in init_struct.metadata if "pyLinkedObjects" in m), {}
             )
 
+            init_defined_objects = next(
+                (m["pyDefinedObjects"] for m in init_struct.metadata if "pyDefinedObjects" in m), {}
+            )
+
+            init_imports = next(
+                (m["pyImports"] for m in init_struct.metadata if "pyImports" in m), {}
+            )
+
             for obj in importedObjects:
                 # print(obj)
                 # Case 3
@@ -137,7 +145,7 @@ def establish_relationships(
                             continue
                         break  # Break out of outer init_struct.installPath loop
 
-                # Case 1
+                # Case 1 (import * from ___)
                 if obj in init_linked_objects.keys():
                     for p in init_struct.installPath:
                         file_for_linked_object = resolve_relative_import(
@@ -157,7 +165,7 @@ def establish_relationships(
                                 file_for_linked_object in [Path(i) for i in item.installPath]
                                 and obj in defined_objects
                             ):
-                                print("Matched case 1", obj, item.installPath)
+                                print("Matched case 1 (import *)", obj, item.installPath)
 
                                 rel = Relationship(software.UUID, item.UUID, "Uses")
                                 if rel not in relationships:
@@ -167,6 +175,18 @@ def establish_relationships(
                         else:
                             continue
                         break  # Break out of outer init_struct.installPath loop
+
+                # Case 1 (imports a symbol defined in __init__.py, eg parse_relationships() in 'surfactant/relationships/__init__.py')
+                if obj in init_defined_objects:
+                    print(
+                        "Matched case 1 (sym defined in __init__.py)", obj, init_struct.installPath
+                    )
+
+                    rel = Relationship(software.UUID, init_struct.UUID, "Uses")
+                    if rel not in relationships:
+                        relationships.append(rel)
+
+                    break
 
         print()
 
