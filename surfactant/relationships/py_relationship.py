@@ -60,27 +60,27 @@ def establish_relationships(
             if defined_objects is None or item.UUID == software.UUID or defined_objects == []:
                 continue  # Skip non-python files and self
 
-            item_path_parts = Path(item.installPath[0]).with_suffix("").parts
-            item_file_path = ".".join(item_path_parts)  # Used for case 2
-            item_package_path = ".".join(item_path_parts[:-1])  # Used for case 1
+            for p in item.installPath:
+                item_path = Path(p)
+                item_path_parts = item_path.with_suffix("").parts
+                item_file_path = ".".join(item_path_parts)  # Used for case 2
+                item_package_path = ".".join(item_path_parts[:-1])  # Used for case 1
 
-            found_matching_file = item_file_path.endswith(package_name)
+                found_matching_file = found_matching_file or item_file_path.endswith(package_name)
 
-            if item_package_path.endswith(package_name):
-                files_in_package.append(item)
+                if item_package_path.endswith(package_name):
+                    files_in_package.append(item)
 
-            print("\t\t", item_package_path, package_name, found_matching_file)
+                print("\t\t", item_package_path, package_name, found_matching_file)
 
-            # Case 2: Check if all imported objects are defined in this module
-            imported_obj_found_in_module = set(importedObjects).issubset(set(defined_objects))
-            if found_matching_file and imported_obj_found_in_module:
-                print("d", item.fileName, defined_objects)
+                # Case 2: Check if all imported objects are defined in this module
+                imported_obj_found_in_module = set(importedObjects).issubset(set(defined_objects))
+                if found_matching_file and imported_obj_found_in_module:
+                    print("d", item.fileName, defined_objects)
 
-                rel = Relationship(software.UUID, item.UUID, "Uses")
-                if rel not in relationships:
-                    relationships.append(rel)
-
-                break
+                    rel = Relationship(software.UUID, item.UUID, "Uses")
+                    if rel not in relationships:
+                        relationships.append(rel)
 
         # Case 1 & 3: Goes over the list of files/modules in the package in case a file match wasn't found
         print("\t", "Finding package match:")
