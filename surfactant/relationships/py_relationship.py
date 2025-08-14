@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import List, Optional
 
+from loguru import logger
+
 import surfactant.plugin
 from surfactant.sbomtypes import SBOM, Relationship, Software
 
@@ -86,6 +88,12 @@ def establish_relationships(
             else:
                 continue
             break  # Break out of outer sbom.software loop
+
+        if not found_matching_file and not files_in_package:
+            logger.warning(
+                f"Unable to establish relationship between UUID {software.UUID} and Python path {package_name} {data}"
+            )
+            continue
 
         # Case 1 & 3: Goes over the list of files/modules in the package in case a file match wasn't found
         print("\t", "Finding package match:")
