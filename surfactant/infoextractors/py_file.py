@@ -22,7 +22,9 @@ class PyImportedModule:
 class Schema:
     pyImports: Dict[str, PyImportedModule] = field(default_factory=dict)
     pyDefinedObjects: List[str] = field(default_factory=list)
-    pyLinkedObjects: Dict[str, str] = field(default_factory=dict)
+    pyLinkedObjects: Dict[str, str] = field(
+        default_factory=dict
+    )  # Symbols what were previously imported or also referenced in __all__ (typically found in __init__.py files)
 
 
 def supports_filetype(filetype: str) -> bool:
@@ -91,7 +93,7 @@ def extract_ast_objects(schema: Schema, filename: str):
                     if isinstance(target, ast.Name):
                         schema.pyDefinedObjects.append(target.id)
 
-                        # Get all 'linked' objects: Symbols referenced in __all__ that were previously imported (typically found in __init__.py files)
+                        # Gets linked symbols defined in __all__
                         if target.id == "__all__":
                             if isinstance(node.value, ast.List):
                                 # Caveat: this only works for constant values/strings.
