@@ -87,15 +87,21 @@ def establish_relationships(
         if not found_matching_file:
             print("\tff", [f.installPath for f in files_in_package])
 
+            install_path_root = Path(files_in_package[0].installPath[0]).resolve().parent
+
             init_struct = next(
                 (
                     item
-                    for item in files_in_package
-                    if any(path.endswith("__init__.py") for path in item.installPath)
+                    for item in sbom.software
+                    if any(
+                        Path(p).resolve() == (install_path_root / "__init__.py")
+                        for p in item.installPath
+                    )
                 ),
                 [],
             )
-            print(init_struct)
+            print()
+            print("IS", init_struct)
             init_linked_objects = next(
                 (m["pyLinkedObjects"] for m in init_struct.metadata if "pyLinkedObjects" in m), {}
             )
