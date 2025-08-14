@@ -1,5 +1,9 @@
 const defaultState = {
-	isSearchNodeHighlighted: false,
+    isSearchNodeHighlighted: false,
+    searchSidebarPanel: null,
+    nodeSidebarPanel: null,
+    graphOverviewSidebarPanel: null,
+    selectedSidebar: ""
 };
 
 export const store = {
