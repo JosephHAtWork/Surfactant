@@ -1,5 +1,6 @@
 import { zoomToView } from "#buttonEventHandlersModule";
 import { insert, isLeaf, resolvePath } from "#kvGraph";
+import { store } from "#stateModule";
 import { setGraphColor } from "#utilModule";
 
 function createRow(
@@ -203,7 +204,6 @@ function getIconClassForFileType(type) {
 function jumpToNodeOnClick() {
 	const nodeID = this.getAttribute("nodeID");
 
-	//store.set("isSearchNodeHighlighted", true);
 	zoomToView([nodeID]);
 	buildNodeSelectionSidebar(nodeID);
 }
@@ -515,6 +515,8 @@ export function insertSearchSidebar(id) {
 			if (matchedIDs.length === 0) {
 				matchedIDs.push(result);
 
+				store.set("isSearchNodeHighlighted", true);
+
 				// Set graph inactive
 				const inactiveColor = getComputedStyle(document.body).getPropertyValue(
 					"--graphInactiveColor",
@@ -522,7 +524,6 @@ export function insertSearchSidebar(id) {
 				setGraphColor(inactiveColor);
 				network.unselectAll();
 
-				console.log(result);
 				createResultsSection(result);
 			} else {
 				const oldMatches = matchedIDs.reduce((acc, arr) =>

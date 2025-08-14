@@ -6,8 +6,9 @@ import { createPopupElement } from "#popupModule";
 import {
 	buildNodeSelectionSidebar,
 	buildSBOMOverviewSidebar,
-	insertSearchSidebar,
 } from "#sidebarModule";
+import { store } from "#stateModule";
+import { setGraphColor } from "#utilModule";
 
 // This method is responsible for drawing the graph, returns the drawn network
 function drawGraph() {
@@ -85,10 +86,15 @@ function drawGraph() {
 			toggleSidebar();
 
 		if (params.nodes.length === 0 && sidebar.classList.contains("open"))
-			// Click on canvas to close sidebar
-			toggleSidebar();
+			if (store.get("isSearchNodeHighlighted")) {
+				// Click on canvas to remove highlight or close sidebar
+				store.set("isSearchNodeHighlighted", false);
 
-		//neighbourhoodHighlight(params);
+				const inactiveColor = getComputedStyle(document.body).getPropertyValue(
+					"--graphInactiveColor",
+				);
+				setGraphColor(null);
+			} else toggleSidebar();
 	}
 	function onDoubleClick(params) {
 		if (params.nodes.length > 0) {

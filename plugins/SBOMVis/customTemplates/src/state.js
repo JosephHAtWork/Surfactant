@@ -1,5 +1,5 @@
 const defaultState = {
-
+	isSearchNodeHighlighted: false,
 };
 
 export const store = {
