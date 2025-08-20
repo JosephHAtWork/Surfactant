@@ -36,8 +36,5 @@ dynamic = ["version"]
 [tool.setuptools.packages.find]
 include = ["SBOMVis"]
 
-[tool.setuptools]
-py-modules=["SBOMVis.surfactantplugin_sbomvis", "SBOMVis.visualization"]
-
 [project.scripts]
 surfactant-sbomvis = "SBOMVis.visualization:main"
