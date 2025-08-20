@@ -31,10 +31,10 @@ dependencies = [
 dynamic = ["version"]
 
 [project.entry-points."surfactant"]
-"surfactantplugin_sbomvis" = "surfactantplugin_sbomvis"
+"surfactantplugin_sbomvis" = "SBOMVis.surfactantplugin_sbomvis"
 
 [tool.setuptools]
-py-modules=["surfactantplugin_sbomvis", "visualization"]
+py-modules=["SBOMVis"]
 
 [project.scripts]
-surfactant-sbomvis = "visualization:main"
+surfactant-sbomvis = "SBOMVis.visualization:main"
