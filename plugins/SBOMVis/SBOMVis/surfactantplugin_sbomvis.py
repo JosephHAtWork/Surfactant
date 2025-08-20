@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Optional
 
-import visualization as vis
+import SBOMVis.visualization as vis
 from loguru import logger
 
 import surfactant.plugin
