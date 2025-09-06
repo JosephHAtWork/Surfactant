@@ -1,5 +1,5 @@
 import { insertSearchSidebar } from "#sidebarModule";
-import { setColorScheme } from "#utilsModule";
+import { groupGraph, setColorScheme } from "#utilsModule";
 
 export function toggleSidebar() {
 	const sidebar = document.getElementById("sidebar");
@@ -80,6 +80,27 @@ function toggleIsolates() {
 	else icon.classList.replace("fa-eye-slash", "fa-eye");
 }
 
+function toggleGrouping() {
+	const toggle = document.getElementById("groupingToggle");
+	const icon = toggle.querySelector("i");
+
+	// Grouping by parent directory -> group by SBOM
+	if (icon.classList.contains("fa-hexagon-nodes")) {
+		toggle.setAttribute("title", "Color by parent directory");
+		icon.classList.replace("fa-hexagon-nodes", "fa-sitemap");
+
+		groupGraph("SBOM");
+	}
+
+	// Grouping by SBOM -> group by parent directory
+	else if (icon.classList.contains("fa-sitemap")) {
+		toggle.setAttribute("title", "Color by SBOM");
+		icon.classList.replace("fa-sitemap", "fa-hexagon-nodes");
+
+		groupGraph("directory");
+	}
+}
+
 function toggleTheme() {
 	const toggle = document.getElementById("themeToggle");
 	const icon = toggle.querySelector("i");
@@ -106,6 +127,10 @@ export function setButtonEventHandlers() {
 	document
 		.getElementById("isolatesToggle")
 		.addEventListener("click", toggleIsolates);
+
+	document
+		.getElementById("groupingToggle")
+		.addEventListener("click", toggleGrouping);
 
 	document.getElementById("exportImage").addEventListener("click", exportImage);
 

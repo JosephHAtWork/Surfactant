@@ -7,7 +7,7 @@ import {
 	buildNodeSelectionSidebar,
 	buildSBOMOverviewSidebar,
 } from "#sidebarModule";
-import { setColorScheme, setNodeColors } from "#utilsModule";
+import { groupGraph, setColorScheme, setNodeColors } from "#utilsModule";
 
 function drawGraph() {
 	const container = document.getElementById("mynetwork");
@@ -28,6 +28,8 @@ function drawGraph() {
 	options.physics.forceAtlas2Based.avoidOverlap = 0.1; // Used to discourage node overlap
 
 	network = new vis.Network(container, data, options);
+
+	groupGraph("SBOM"); // Color nodes based on it's SBOM
 
 	if (options.physics.enabled === false)
 		setTimeout(() => network.setOptions({ physics: { enabled: true } }), 250); // Automatically re-enable physics after graph has loaded

@@ -67,3 +67,47 @@ export function setColorScheme(mode) {
 		})),
 	);
 }
+
+/**
+ * Groups nodes together by parent directory or SBOM
+ * @param {Array} nodeIDs - Array of node IDs
+ * @param {String} group - Either "directory" or "SBOM"
+ */
+export function groupGraph(group) {
+	const ns = nodes.get();
+
+	switch (group) {
+		case "directory": {
+			nodes.update(
+				nodes.get().map((n) => {
+					const nodeInstallPath = n.surfactantSoftwareStruct.installPath[0];
+					let parentDirectory = nodeInstallPath.substring(
+						0,
+						nodeInstallPath.lastIndexOf("/"),
+					);
+
+					if (n.surfactantSoftwareStruct.installPath.length > 1)
+						// If a entry has multiple install paths (eg multiple empty files), create a new group for it
+						parentDirectory = "<Multiple install paths>";
+
+					return {
+						id: n.id,
+						group: parentDirectory,
+					};
+				}),
+			);
+			break;
+		}
+
+		case "SBOM": {
+			nodes.update(
+				nodes.get().map((n) => ({
+					id: n.id,
+					group: n?.nodeMetadata?.SBOMFileName,
+				})),
+			);
+
+			break;
+		}
+	}
+}
